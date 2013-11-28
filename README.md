@@ -1,0 +1,4 @@
+copilot
+=======
+
+CernVM CoPilot Framework
