@@ -149,6 +149,9 @@ sub _loadConfig
     # Done jobs dir
     $self->{'DONE_JOB_DIR'} = ($options->{'COMPONENT_OPTIONS'}->{'DoneJobDir'} || undef);
     $self->{'DONE_JOB_DIR'} = $self->{'DONE_JOB_DIR'}.'/' if defined $self->{'DONE_JOB_DIR'};
+    
+    # Tunable parameters
+    $self->{'REQUEST_COOLDOWN'} = ($options->{'COMPONENT_OPTIONS'}->{'RequestCooldown'} || 60);
 
     # Waiting jobs list name
     $self->{'WAITING_JOBS_LIST'} = ($options->{'COMPONENT_OPTIONS'}->{'WaitingJobsList'} || 'waiting_jobs');
@@ -432,7 +435,7 @@ sub componentWantGetJobHandler
     my $lastSeen = $r->get("agentseen::".$f);
     my $t = time();
 
-    if (defined ($lastSeen) and ($t - $lastSeen) < 60) 
+    if (defined ($lastSeen) and ($t - $lastSeen) < $self->{'REQUEST_COOLDOWN'}) 
     {   
         $kernel->post($container, $logHandler, "Agent ".$input->{'from'}." sending job requests way to often. Putting bastard to sleep.", 'info');
      
